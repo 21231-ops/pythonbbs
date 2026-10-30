@@ -1,0 +1,58 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}
+编辑员工
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='front/css/base.css') }}">
+{% endblock %}
+
+{% block body %}
+<div style="text-align:center">
+    <h1>编辑员工</h1>
+</div>
+
+<div class="base-box">
+    <div class="center-horizontal mt-2" style="transform: translateX(8px);">
+        <div style="transform: translateY(4px);">
+            <label>邮箱：</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input type="text" class="form-control" name="email" placeholder="邮箱">
+        </div>
+    </div>
+
+    <div class="center-horizontal mt-2" style="transform: translateX(-55px);">
+        <div style="transform: translateY(4px);">
+            <label>员工：</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="is_staff" id="booleanRadio1">
+            <label class="form-check-label" for="booleanRadio1">是</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="is_staff" id="booleanRadio2">
+            <label class="form-check-label" for="booleanRadio2">否</label>
+        </div>
+    </div>
+
+    <div class="center-horizontal mt-2">
+        <div style="transform: translateY(4px);">
+            <label>角色：</label>
+        </div>
+        {% for role in roles %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" id="inlineRadio{{ loop.index }}" value="{{ role.id }}">
+                <label class="form-check-label" for="inlineRadio{{ loop.index }}">{{ role.name }}</label>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="center-horizontal mt-2">
+        <div style="width:100px;height:50px">
+            <a href="{{ url_for('cms.add_staff') }}" class="btn btn-primary mb-3">立即添加</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

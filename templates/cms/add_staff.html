@@ -1,0 +1,46 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}
+添加员工
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='front/css/base.css') }}">
+{% endblock %}
+
+{% block body %}
+<div style="text-align:center">
+    <h1>添加员工</h1>
+</div>
+
+<div class="base-box">
+    <div class="center-horizontal mt-2" style="transform: translateX(8px);">
+        <div style="transform: translateY(4px);">
+            <label>邮箱：</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input type="text" class="form-control" name="email" placeholder="邮箱">
+        </div>
+    </div>
+
+    <div class="center-horizontal mt-2">
+        <div style="transform: translateY(4px);">
+            <label>角色：</label>
+        </div>
+        {% for role in roles %}
+            {% if role.name != '普通用户' %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="role" id="inlineRadio{{ loop.index }}" value="{{ role.id }}">
+                    <label class="form-check-label" for="inlineRadio{{ loop.index }}">{{ role.name }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="center-horizontal mt-2">
+        <div style="width:100px;height:50px">
+            <a href="{{ url_for('cms.add_staff') }}" class="btn btn-primary mb-3">立即添加</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

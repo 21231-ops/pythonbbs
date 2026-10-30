@@ -1,0 +1,82 @@
+{% extends 'front/base.html' %}
+
+{% block title %}
+{{ post.title }}
+{% endblock %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='quill/quill.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+<div class="post-box">
+    <div style="border: 1px solid #eee; border-radius: 12px; padding: 30px; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <div>
+            <div class="page-title">
+                <h2>{{ post.title }}</h2>
+            </div>
+            <p class="post-info-group">
+                <span>发表时间: {{ post.create_time }}</span>
+                <span>作者: <a href="{{ url_for('user.profile', user_id=post.author.id) }}">{{ post.author.username }}</a></span>
+                <span>所属板块: {{ post.board.name }}</span>
+                <span>阅读: {{ post.read_count }}</span>
+                <span>评论: {{ post.comments.filter_by(is_active=True).count() }}</span>
+            </p>
+            <article class="post-content" style="padding: 20px 25px; border: 1px solid #e9ecef; border-radius: 8px; background-color: #fafafa; margin-top: 20px;">
+                {{ post.content|safe }}
+            </article>
+        </div>
+
+        <h4 style="margin-top:20px;margin-bottom: 20px; font-weight: bold; color: #333; text-align: center;">
+            全部评论 <span style="font-size: 14px; color: #999; font-weight: normal;">({{ post.comments.filter_by(is_active=True).count() }})</span>
+        </h4>
+
+        {% if post.comments.filter_by(is_active=True).all() %}
+        <div style="margin-top:20px;margin-bottom:20px;border-radius:1%;">
+            <ul class="comment-list-group">
+                {% for comment in post.comments.filter_by(is_active=True).all() %}
+                    <li style="margin-bottom: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background-color: #fff;">
+                        <p class="author-info">
+                            <span><a href="{{ url_for('user.profile', user_id=post.author.id) }}" style="text-decoration: none;">
+                                <img id="avatar-preview" class="avatar" src="{% if comment.author.avatar %}{{ comment.author.avatar }}{% else %}{{ url_for('static', filename='/upload/avatars/defaultAvatar.jpg') }}{% endif %}"
+                                     alt="头像" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 3px solid #eee;"></a></span>
+                            <span style="margin-left:5px; vertical-align: middle;"><strong>{{ comment.author.username }}</strong></span>
+                        </p>
+                        <div class="comment-txt">
+                            {{ comment.content | safe }}
+                        </div>
+                        <span style="display:inline-block;color:#ccc">{{ comment.create_time }}</span>&nbsp;&nbsp;
+                        <span style="display:inline-block;color:#ccc">·&nbsp;&nbsp;{% if comment.author.province %}{{ comment.author.province }}{% else %}未知{% endif %}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+            <div style="width: 100%; margin: 20px auto; padding: 40px; text-align: center; background-color: #f8f9fa; border-radius: 8px; color: #6c757d;">
+                <h5 style="margin-bottom: 10px;">暂无评论</h5>
+                <p style="font-size: 14px; margin: 0;">还没有人发表过评论，快来抢沙发吧~</p>
+            </div>
+        {% endif %}
+
+        <form action="{{ url_for('front.public_comment', post_id=post.id) }}" method="post">
+<!--            <textarea class="form-control" name="content" id="editor" cols="30" rows="5"></textarea>-->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="text-danger mt-2">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+<!--            <div class="comment-btn-group">-->
+<!--                <button class="btn btn-primary" id="comment-btn">发表评论</button>-->
+<!--            </div>-->
+            <div id="comment-editor" style="height: 150px; background: #fff;"></div>
+            <button type="button" id="submit-comment-btn" data-post-id="{{ post.id }}" class="btn btn-primary mt-2">发表评论</button>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='quill/quill.js') }}"></script>
+<script src="{{ url_for('static', filename='front/js/comment.js') }}"></script>
+{% endblock %}

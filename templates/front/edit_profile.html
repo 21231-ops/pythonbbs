@@ -1,0 +1,98 @@
+{% extends 'front/base.html' %}
+
+{% block title %}
+编辑个人资料
+{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div style="text-align:center;margin:20px auto">
+        <h1>个人资料</h1>
+    </div>
+
+    <div class="profile-medium-box" style="display: flex;flex-direction: column;align-items:center;border:1px solid #ccc;">
+        <div style="text-align: center; margin: 15px;">
+            <img id="avatar-preview" class="avatar" src="{% if user.avatar %}{{ user.avatar }}{% else %}{{ url_for('static', filename='upload/avatars/defaultAvatar.jpg') }}{% endif %}" alt="头像"
+             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #eee;">
+        </div>
+
+        <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display: none;">
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <label for="avatar-input" class="btn btn-outline-primary" style="cursor: pointer; border-radius: 20px; padding: 6px 20px; font-size: 14px;">
+                选择新头像
+            </label>
+        </div>
+
+        <div class="form-group" style="width: 750px; display: flex; align-items: center; margin-bottom: 15px;">
+            <label for="username" style="width: 90px; margin: 0; font-weight: bold; text-align: right; padding-right: 10px; white-space: nowrap;">姓名：</label>
+            <input type="text" name="username" id="username" class="form-control" value="{{ user.username }}" placeholder="请输入姓名" style="flex: 1;">
+        </div>
+
+        <div class="form-group" style="width: 750px; display: flex; align-items: center; margin-bottom: 20px;">
+            <label for="province" style="width: 90px; margin: 0; font-weight: bold; text-align: right; padding-right: 10px; white-space: nowrap;">所在地：</label>
+            <select type="text" name="province" id="province" class="form-control" style="flex: 1;">
+               {% set provinces = ['北京', '天津', '上海', '重庆', '河北', '山西', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南',
+                '湖北', '湖南', '广东', '海南', '四川', '贵州', '云南', '陕西', '甘肃', '青海', '台湾', '内蒙古', '广西', '西藏', '宁夏', '新疆', '香港', '澳门'] %}
+                <option value="" disabled {% if not user.province %}selected{% endif %}>请选择省份</option>
+
+                {% for province in provinces %}
+                    <option value="{{ province }}" {% if user.province == province %}selected{% endif %}>
+                        {{ province }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group" style="width: 750px; display: flex; align-items: center; margin-bottom: 20px;">
+            <label for="signature" style="width: 90px; margin: 0; font-weight: bold; text-align: right; padding-right: 10px; white-space: nowrap;">个性签名：</label>
+            <input type="text" name="signature" id="signature" class="form-control" value="{{ user.signature or '' }}" placeholder="请输入你的个性签名" style="flex: 1;">
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <div class="form-group" style="display: flex; align-items: center; margin-bottom: 15px;">
+                <label for="gender" style="width: 80px; margin: 0; font-weight: bold; text-align: right; padding-right: 15px;">性别：</label>
+                <select name="gender" id="gender" class="form-control" style="flex: 1;">
+                    <option value="male" {% if user.gender == 'male' %}selected{% endif %}>男</option>
+                    <option value="female" {% if user.gender == 'female' %}selected{% endif %}>女</option>
+                    <option value="secret" {% if user.gender == 'secret' %}selected{% endif %}>保密</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; margin-bottom: 15px;">
+                <label for="birthday" style="width: 90px; margin: 0; font-weight: bold; text-align: right; padding-right: 10px;">生日：</label>
+                <input type="date" name="birthday" id="birthday" class="form-control" value="{{ user.birthday or '' }}" style="flex: 1;">
+            </div>
+        </div>
+
+        <div id="tag-container" class="form-group" style="width: 750px; display: flex; align-items: flex-start; margin-bottom: 20px;">
+            <label style="width: 90px; margin: 0; font-weight: bold; text-align: right; padding-right: 10px; white-space: nowrap; padding-top: 6px;">个性标签：</label>
+
+            <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 10px;">
+                {% set tags = ['摸鱼达人', '佛系青年', '社恐晚期', '话痨', '二次元', '打工人', '干饭第一名', '发际线保护协会', '不想上班',
+                '人间清醒', '摄影', '旅行', '健身', '阅读', '游戏', '音乐', '电影', '美食', '夜猫子', '宠物', '学生', '自由职业'] %}
+                {% for tag in tags %}
+                    <label class="tag-pill">
+                        <input type="checkbox" class="tag-checkbox" name="tags[]" value="{{ tag }}"
+                               {% if user.tags and tag in user.tags %}checked{% endif %}>
+                        <span>{{ tag }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <div style="width: 750px; text-align: center; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary" style="width: 120px;">保存修改</button>
+        </div>
+    </div>
+</form>
+
+<script src="{{ url_for('static', filename='front/js/edit_profile.js') }}"></script>
+{% endblock %}

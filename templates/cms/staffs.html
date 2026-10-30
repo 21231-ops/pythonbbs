@@ -1,0 +1,47 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}
+员工管理
+{% endblock %}
+
+{% block body %}
+<div style="text-align:center">
+    <h1>员工管理</h1>
+</div>
+
+<table class="table table-bordered table-striped table-hover mt-4">
+    <thead class="thead-dark">
+        <tr>
+            <th class="text-center align-middle">序号</th>
+            <th class="text-center align-middle">邮箱</th>
+            <th class="text-center align-middle">用户名</th>
+            <th class="text-center align-middle">加入时间</th>
+            <th class="text-center align-middle">角色</th>
+            <th class="text-center align-middle">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td class="text-center align-middle">{{ loop.index }}</td>
+                <td class="text-center align-middle">{{ user.email }}</td>
+                <td class="text-center align-middle">{{ user.username }}</td>
+                <td class="text-center align-middle">{{ user.join_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td class="text-center align-middle">{{ user.role.name }}</td>
+                <td class="text-center align-middle">
+                    {% if not user.has_permission(PermissionEnum.CMS_USER) %}
+                        <a href="{{ url_for('cms.edit_staff', user_id=user.id) }}" class="btn btn-info btn-sm">编辑</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="center-horizontal">
+    <div style="width:100px;height:50px">
+        <a href="{{ url_for('cms.add_staff') }}" class="btn btn-primary mb-3">添加员工</a>
+    </div>
+</div>
+
+{% endblock %}

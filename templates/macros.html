@@ -1,0 +1,30 @@
+{% macro chat_window() %}
+<div id="chat-box" style="display: none; position: fixed; right: 20px; bottom: 20px; width: 1000px; height: 600px; border: 1px solid #ccc; background: white; z-index: 9999; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <div id="chat-header" style="padding: 10px; text-align: center; border-bottom: 1px solid #eee; display: flex; background: #f8f9fa; border-radius: 8px 8px 0 0; cursor: move;">
+    <span id="chat-target-name" style="flex:1; font-weight: bold; color: #333;"></span>
+    <button id="close-chat-btn" style="border: none; background: none; cursor: pointer; font-size: 18px;">&times;</button>
+  </div>
+  <div style="display:flex;">
+    <div id="sidebar" class="hide-scroll" style="width:8%; height:480px; overflow-y: auto; border-right: 1px solid #ccc">
+
+    </div>
+    <div id="chat-messages" style="width:92%; height: 480px; overflow-y: scroll; padding: 10px; background: #fff;"></div>
+  </div>
+  <div style="padding: 10px; border-top: 1px solid #eee; display: flex; align-items: center; gap: 15px; height: 65px;">
+    <input type="text" id="chat-input" placeholder="请输入消息" style="flex: 1; height: 40px; padding: 0 15px; border: 1px solid #ccc; border-radius: 4px; outline: none; box-sizing: border-box;">
+    <input type="file" id="chat-file-input" name="avatar" accept="image/*" style="display: none;">
+    <label for="chat-file-input" style="cursor: pointer;">
+        <img src="{{ url_for('static', filename='upload/icons/文件上传.png') }}" style="width:35px;height:35px; transform:translateY(4px);">
+    </label>
+    <button id="send-btn" class="btn btn-primary" style="font-size:16px; width: 80px; height: 40px; margin: 0; padding: 0;">发送</button>
+  </div>
+</div>
+<script>
+    window.myInfo = {
+        id: "{{ session.get('user_id') or (g.user.id if g.user else '') }}",
+        username: "{{ g.user.username if g.user else '' }}",
+        avatar: "{{ g.user.avatar if (g.user and g.user.avatar) else url_for('static', filename='upload/avatars/defaultAvatar.jpg') }}",
+        defaultAvatar: "{{ url_for('static', filename='upload/avatars/defaultAvatar.jpg') }}"
+    };
+</script>
+{% endmacro %}

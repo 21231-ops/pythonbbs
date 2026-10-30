@@ -1,0 +1,111 @@
+{% extends 'front/base.html' %}
+
+{% block title %}
+个人中心
+{% endblock %}
+
+{% block head %}
+<link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='front/css/base.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="profile-box" style="position: relative; padding-bottom: 70px; width: 800px; margin: 0 auto; border: 1px solid #ccc;">
+    <div style="margin:10px">
+        {% if user.avatar %}
+            <img src="{{ user.avatar }}" alt="头像" style="width: 120px; height: 120px; border-radius: 50%;">
+        {% else %}
+            <img class="avatar" src="{{ url_for('static', filename='upload/avatars/defaultAvatar.jpg') }}" alt="默认头像" style="width: 120px; height: 120px; border-radius: 50%;">
+        {% endif %}
+    </div>
+    {% if is_mine %}
+        <a href="{{ url_for('user.edit_profile') }}" class="btn btn-info board-radius"
+           style="position: absolute; left: 10px; top: 140px; width:120px; height:30px; font-size:14px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
+           编辑个人资料
+        </a>
+    {% endif %}
+    <div class="profile-small-box" style="position: absolute; left: 5px; top: 100px;">
+        <span style="display: flex; align-items: center; width: 100%;">
+    <span style="font-size:24px; margin-right:20px;margin-bottom:5px;">{{ user.username }}</span>
+        {% if user.gender == 'male' %}
+            <img style="width:30px; height:30px; margin-right: 10px;" src="{{ url_for('static', filename='upload/icons/性别男.png') }}">
+        {% elif user.gender == 'female' %}
+            <img style="width:30px; height:30px; margin-right: 10px;" src="{{ url_for('static', filename='upload/icons/性别女.png') }}">
+        {% else %}
+             <img style="width:30px; height:30px; margin-right: 10px;" src="{{ url_for('static', filename='upload/icons/性别保密.png') }}">
+        {% endif %}
+        <img style="margin-left:auto;margin-right: 15px; width:25px; height:25px;" src="{{ url_for('static', filename='upload/icons/ip.png') }}">
+        {% if user.province %}
+            {{ user.province }}
+        {% else %}
+            未知
+        {% endif %}
+    </span>
+        <div style="margin-bottom:15px; font-size:16px; color:#ccc">
+            <span>{{ user.signature or '这个人很懒，什么都没有留下' }}</span>
+        </div>
+        <div>
+            {% if user.tags and user.tags != 'None' %}
+                {% for tag in user.tags.split(',') %}
+                    <span style="margin-right:15px; background-color: #f0f2f5; color: #61666d; padding: 4px 12px; border-radius: 15px; font-size: 13px;">
+                    {{ tag }}
+                </span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div style="position: absolute; right: 0px; bottom: -15px; display: flex; align-items: center;" class="mb-3 me-3">
+            {% if is_mine %}
+            <!-- 如果是自己：显示关注的人 -->
+                <button class="btn btn-primary board-radius" style="width:100px; height:40px;">关注的人</button>
+            {% else %}
+                <!-- 如果是别人：显示发私信 + 关注 -->
+                <button class="btn btn-light border board-radius" id="chat-btn" style="width:80px; height:40px"
+                    data-user-id="{{ user.id }}" data-username="{{ user.username }}" data-useravatar="{{ user.avatar }}">发私信</button>
+                <button class="btn btn-primary board-radius" style="margin-left:20px;width:80px; height:40px;">关注</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if posts %}
+<div style="width: 800px;margin:10px auto;padding:10px" class="border">
+    <ul class="post-list-group" id="post-list-container">
+        {% for post in posts %}
+            <li>
+                <div class="post-container">
+                    <p class="post-title">
+                        <a href="{{ url_for('posts.post_detail', post_id=post.id) }}">
+                            {{ post.title }}
+                        </a>
+                    </p>
+                    <p class="post-info-group">
+                        <a href="{{ url_for('user.profile', user_id=post.author.id) }}" style="text-decoration: none;">
+                            {% if post.author.avatar %}
+                            <img src="{{ post.author.avatar }}" alt="avatar"
+                                 style="width: 24px; height: 24px; border-radius: 50%; vertical-align: middle;">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='upload/avatars/defaultAvatar.jpg') }}" alt="avatar"
+                                 style="width: 24px; height: 24px; border-radius: 50%; vertical-align: middle;">
+                            {% endif %}
+                        </a>
+                        <span>作者: {{ post.author.username }}</span>
+                        <span>发表时间: {{ post.create_time }}</span>
+                        <span>评论: {{ post.comments.filter_by(is_active=True).count() }}</span>
+                    </p>
+                </div>
+            </li>
+            {% if not loop.last %}
+                <hr>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% else %}
+    <!-- 如果没有文章，显示一个优雅的空状态提示 -->
+    <div style="width: 800px; margin: 20px auto; padding: 40px; text-align: center; background-color: #f8f9fa; border-radius: 8px; color: #6c757d;">
+        <h5 style="margin-bottom: 10px;">暂无文章</h5>
+        <p style="font-size: 14px; margin: 0;">该用户还没有发布过任何内容~</p>
+    </div>
+{% endif %}
+
+{% endblock %}

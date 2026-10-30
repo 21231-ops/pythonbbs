@@ -1,0 +1,36 @@
+{% extends 'front/base.html' %}
+
+{% block title %}
+发布帖子
+{% endblock %}
+
+{% block body %}
+<h1 class="page-title">发布帖子</h1>
+<div class="post-box">
+    <div class="form-group">
+        <label>标题</label>
+        <input type="text" class="form-control" name="title">
+    </div>
+
+    <div class="form-group">
+        <label>板块</label>
+        <select name="board_id" class="form-control">
+            {% for board in boards %}
+                <option value="{{ board.id }}">{{ board.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="index-box">
+        <div id="editor" style="width:100%"></div>
+    </div>
+
+    <div class="publish_button">
+        <div class="form-group">
+            <button class="btn btn-warning btn-block" style="width:150px;margin:20px auto" id="submit-btn">发布帖子</button>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='wangEditor/wangEditor.min.js') }}"></script>
+<script src="{{ url_for('static', filename='front/js/public_post.js') }}"></script>
+{% endblock %}
