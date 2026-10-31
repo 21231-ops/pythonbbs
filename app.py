@@ -24,6 +24,8 @@ from bbs_celery import make_celery
 app = Flask(__name__)
 env = os.environ.get('FLASK_ENV', 'development')
 app.config.from_object(config.config_map[env])
+app.config.setdefault('CELERY_BROKER_URL', 'redis://redis:6379/0')
+app.config.setdefault('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
 app.before_request(hooks.bbs_before_request)
 app.template_filter("email_hash")(filters.email_hash)
 celery = make_celery(app)

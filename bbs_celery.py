@@ -10,8 +10,11 @@ def send_mail(recipient, subject, body):
 
 #  创建Celery对象
 def make_celery(app):
-    celery = Celery(app.import_name, backend=app.config['CELERY_RESULT_BACKEND'],
-    broker=app.config['CELERY_BROKER_URL'])
+    celery = Celery(
+        app.import_name,
+        backend=app.config.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0'),
+        broker=app.config.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
+    )
     celery.conf.update(app.config)
     TaskBase = celery.Task
 
