@@ -2,6 +2,7 @@ import os.path
 
 from flask import Blueprint, render_template, request, current_app, redirect, url_for, flash, session, g, jsonify
 
+from decorators import login_required
 from exts import cache, db
 from models.post import PostModel
 from utils import restful
@@ -157,6 +158,7 @@ def password_reset_verify():
     return jsonify({"code": 200, "message": "重置成功", "redirect_url": "/user/login"})
 
 @bp.get("/profile/<string:user_id>")
+@login_required
 def profile(user_id):
     if not user_id or user_id == 'None':
         flash("用户不存在")
@@ -175,6 +177,7 @@ def profile(user_id):
     return render_template("front/profile.html", **context)
 
 @bp.route("/profile/edit", methods=['GET', 'POST'])
+@login_required
 def edit_profile():
     user_id = session.get('user_id')
     user = UserModel.query.get(user_id)
@@ -248,3 +251,42 @@ def edit_profile():
                 for error in errors:
                     flash(error)
             return redirect(url_for("user.profile", user_id=user.id))
+
+@bp.route("/follow/<user_id>", methods=['GET', 'POST'])
+@login_required
+def follow(user_id):
+    my_id = session.get("user_id")
+    me = UserModel.query.filter_by(id=my_id).first()
+    current_user = UserModel.query.filter_by(id=user_id).first()
+    if current_user.is_active:
+        me.follow(current_user)
+        db.session.commit()
+    return redirect(url_for("user.profile", user_id=user_id))
+
+@bp.route("/unfollow/<user_id>", methods=['GET', 'POST'])
+@login_required
+def unfollow(user_id):
+    my_id = session.get("user_id")
+    me = UserModel.query.filter_by(id=my_id).first()
+    current_user = UserModel.query.filter_by(id=user_id).first()
+    if current_user.is_active:
+        me.unfollow(current_user)
+        db.session.commit()
+    return redirect(url_for("user.profile", user_id=user_id))
+
+
+@bp.route("/followed_list/<user_id>", methods=['GET', 'POST'])
+@login_required
+def followed_list(user_id):
+    me = UserModel.query.filter_by(id=user_id).first()
+    follow_records = me.followed.all()
+    users = [follow_record.followed for follow_record in follow_records]
+    return render_template("front/followeds.html", users=users)
+
+@bp.route("/follower_list/<user_id>", methods=['GET', 'POST'])
+@login_required
+def follower_list(user_id):
+    me = UserModel.query.filter_by(id=user_id).first()
+    follow_records = me.followers.all()
+    users = [follow_record.followers for follow_record in follow_records]
+    return render_template("front/followers.html", users=users)

@@ -17,10 +17,11 @@ __pycache__/
 config.ini
 
 # 用户上传的文件（注意这里的星号 *）
-static/upload/*
-
-# 必须包含 avatars 目录和里面的默认头像
+static/upload/**
+!static/upload/icons/
+!static/upload/icons/**
 !static/upload/avatars/
+static/upload/avatars/**
 !static/upload/avatars/defaultAvatar.jpg
 
 # IDE 配置
