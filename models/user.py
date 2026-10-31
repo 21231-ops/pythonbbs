@@ -23,6 +23,14 @@ role_permission_table = db.Table(
     db.Column("permission_id", db.Integer, db.ForeignKey("permission.id"))
 )
 
+class FollowModel(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.String(100), db.ForeignKey('user.id'),
+                            primary_key=True)
+    followed_id = db.Column(db.String(100), db.ForeignKey('user.id'),
+                            primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
 class RoleModel(db.Model):
     __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -47,11 +55,15 @@ class UserModel(db.Model):
     join_time = db.Column(db.DateTime, default=datetime.now)
     is_staff = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
+    role_id = db.Column(db.Integer, db.ForeignKey("role.id"))
 
     # 外键
-    role_id = db.Column(db.Integer, db.ForeignKey("role.id"))
     role = db.relationship("RoleModel", backref="users")
     posts = db.relationship('PostModel', backref='author', lazy='dynamic')
+    followed = db.relationship('FollowModel',foreign_keys=[FollowModel.follower_id],backref=db.backref('followers', lazy='joined'),
+                               lazy='dynamic',cascade='all, delete-orphan')
+    followers = db.relationship('FollowModel',foreign_keys=[FollowModel.followed_id],backref=db.backref('followed', lazy='joined'),
+                                lazy='dynamic',cascade='all, delete-orphan')
 
     def __init__(self, *args, **kwargs):
         if "password" in kwargs:
@@ -73,6 +85,24 @@ class UserModel(db.Model):
 
     def has_permission(self, permission):
         return permission in [permission.name for permission in self.role.permissions]
+
+    def follow(self, user):
+        if not self.is_following(user):
+            f = FollowModel(follower=self, followed=user)
+            db.session.add(f)
+
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+
+    def is_following(self, user):
+        return self.followed.filter_by(
+            followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        return self.followers.filter_by(
+            follower_id=user.id).first() is not None
 
 class ChatMessageModel(db.Model):
     __tablename__ = "chat_message"

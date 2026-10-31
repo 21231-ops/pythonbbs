@@ -12,7 +12,13 @@ class BaseConfig:
     CHAT_IMAGES_PATH = os.path.join(UPLOAD_IMAGE_PATH, "chat_images")
 
 class DevelopmentConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@127.0.0.1:3306/pythonbbs?charset=utf8mb4"
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'SQLALCHEMY_DATABASE_URI',
+        "mysql+pymysql://root:root@127.0.0.1:3306/pythonbbs?charset=utf8mb4"
+    )
+
+    CACHE_REDIS_HOST = os.environ.get("REDIS_HOST", "192.168.164.131")
+    CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://192.168.164.131:6379/0")
     MAIL_SERVER = "smtp.qq.com"
     MAIL_USE_SSL = True
     MAIL_PORT = 465
@@ -20,10 +26,8 @@ class DevelopmentConfig(BaseConfig):
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_SENDER")
     CACHE_TYPE = "RedisCache"
-    CACHE_REDIS_HOST = "192.168.164.131"
     CACHE_REDIS_PORT = 6379
-    CELERY_BROKER_URL = "redis://192.168.164.131:6379/0"
-    CELERY_RESULT_BACKEND = "redis://192.168.164.131:6379/0"
+    CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://192.168.164.131:6379/0")
     AVATARS_SAVE_PATH = os.path.join(BaseConfig.UPLOAD_IMAGE_PATH, "avatars")
 
 class TestingConfig(BaseConfig):
@@ -32,9 +36,10 @@ class TestingConfig(BaseConfig):
                                "3306/pythonbbs?charset=utf8mb4")
 
 class ProductionConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = ("mysql+pymysql://root:"
-                               "root@192.168.164.131:"
-                               "3306/pythonbbs?charset=utf8mb4")
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'SQLALCHEMY_DATABASE_URI',
+        "mysql+pymysql://root:root@192.168.164.131:3306/pythonbbs?charset=utf8mb4"
+    )
 
 config_map = {
     'development': DevelopmentConfig,

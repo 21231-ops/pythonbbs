@@ -1,0 +1,50 @@
+{% extends 'front/base.html' %}
+
+{% block title %}
+关注
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='front/css/base.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="profile-box" style="padding: 20px;">
+    <div style="text-align:center; margin-bottom: 30px;">
+        <h1>关注列表</h1>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 15px; max-width: 700px; margin: 0 auto;">
+        {% for user in users %}
+            <div style="display: flex; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="flex-shrink: 0; margin-right: 20px;">
+                    <a href="{{ url_for('user.profile', user_id=user.id) }}" style="text-decoration: none;">
+                        <img class="avatar" src="{% if user.avatar %}{{ user.avatar }}{% else %}{{ url_for('static', filename='upload/avatars/defaultAvatar.jpg') }}{% endif %}"
+                         alt="头像" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #eee;">
+                    </a>
+                </div>
+                <div style="display: flex; flex-direction: column; justify-content: center;">
+                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                        <span style="font-size: 18px; font-weight: bold; color: #333; margin-right: 10px;">{{ user.username }}</span>
+                            {% if user.gender == 'male' %}
+                                <img style="width: 25px; height: 25px;" src="{{ url_for('static', filename='upload/icons/性别男.png') }}">
+                            {% elif user.gender == 'female' %}
+                                <img style="width: 25px; height: 25px;" src="{{ url_for('static', filename='upload/icons/性别女.png') }}">
+                            {% else %}
+                                <img style="width: 25px; height: 25px;" src="{{ url_for('static', filename='upload/icons/性别保密.png') }}">
+                            {% endif %}
+                    </div>
+                    <div style="font-size: 14px; color: #888;">
+                        {{ user.signature or '这个人很懒，什么都没留下...' }}
+                    </div>
+
+                </div>
+            </div>
+        {% else %}
+            <div style="width: 100%; margin: 20px auto; padding: 40px; text-align: center; background-color: #f8f9fa; border-radius: 8px; color: #6c757d;">
+                <h5 style="margin-bottom: 10px;">还没有关注的人哦</h5>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

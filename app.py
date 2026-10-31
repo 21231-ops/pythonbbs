@@ -1,5 +1,9 @@
 from dotenv import load_dotenv
-load_dotenv()
+import os
+
+if os.environ.get('FLASK_ENV') != 'production':
+    load_dotenv()
+
 import logging
 import commands
 import config
