@@ -118,8 +118,13 @@ def mail_password_reset():
             body = f"【灵犀论坛】您的验证码是：{captcha},请勿告诉别人！"
             current_app.celery.send_task("send_mail", (email, subject, body))
             cache.set(email, captcha, timeout=600)
-            return restful.ok(data={"redirect_url":url_for('user.password_reset_verify')})
+            return jsonify({"code": 200, "message": "验证码已发送"})
         except Exception as e:
+            print("=" * 50)
+            print(f"发送验证码时发生严重错误: {e}")  # 将错误信息打印到终端
+            print("=" * 50)
+            import traceback
+            traceback.print_exc()  # 打印完整的错误堆栈，非常有助于定位问题
             return restful.server_error()
 
 

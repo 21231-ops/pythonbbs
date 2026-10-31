@@ -29,6 +29,11 @@
                 {% if not loop.last %}
                     <hr>
                 {% endif %}
+                {% else %}
+                    <div style="text-align: center; padding: 50px 0; color: #999;">
+                        <h4>还没有帖子哦~</h4>
+                        <p>点击右侧的“发布帖子”，来抢占第一个沙发吧！</p>
+                    </div>
             {% endfor %}
         </ul>
         <div id="pagination-container" style="display: flex; justify-content: center; margin-top: 20px;">
