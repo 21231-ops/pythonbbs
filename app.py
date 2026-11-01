@@ -51,7 +51,7 @@ cache.init_app(app)
 csrf.init_app(app)
 avatars.init_app(app)
 migrate.init_app(app, db)
-socketio.init_app(app, cors_allowed_origins="*")
+socketio.init_app(app, cors_allowed_origins="*", manage_session=False)
 import socket_events
 
 # 注册蓝图
@@ -71,4 +71,4 @@ app.cli.command("create-test-post")(commands.create_test_post)
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host="0.0.0.0", port=8000, allow_unsafe_werkzeug=True, manage_session=False)
+    socketio.run(app, debug=True, host="0.0.0.0", port=8000, allow_unsafe_werkzeug=True)
