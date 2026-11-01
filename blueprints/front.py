@@ -9,6 +9,8 @@ from models.post import BoardModel, PostModel, CommentModel
 from models.user import UserModel, ChatMessageModel
 from utils import restful
 from utils.upload_image import save_uploaded_image
+from datetime import datetime, timedelta
+
 bp = Blueprint("front", __name__, url_prefix="")
 
 @bp.route("/")
@@ -41,6 +43,7 @@ def index():
 def upload_image():
     return save_uploaded_image()
 
+
 @bp.route("/post/public", methods=['GET', 'POST'])
 @login_required
 def public_post():
@@ -52,6 +55,21 @@ def public_post():
         if form.validate():
             title = form.title.data
             content = form.content.data
+
+            # ================= 防抖逻辑开始 =================
+            # 查询过去 5 秒内，该用户是否发过相同内容的帖子
+            three_seconds_ago = datetime.now() - timedelta(seconds=5)
+            recent_post = PostModel.query.filter(
+                PostModel.author_id == g.user.id,
+                PostModel.title == title,
+                PostModel.content == content,
+                PostModel.create_time >= three_seconds_ago  # 假设你的模型里有创建时间字段
+            ).first()
+
+            if recent_post:
+                return restful.params_error(message="请勿重复提交！")
+            # ================= 防抖逻辑结束 =================
+
             board_id = form.board_id.data
             post = PostModel(title=title, content=content, board_id=board_id, author=g.user)
             db.session.add(post)
@@ -60,6 +78,11 @@ def public_post():
         else:
             message = form.messages[0]
             return restful.params_error(message=message)
+
+
+from flask import request, jsonify, flash, redirect, url_for, g
+from datetime import datetime, timedelta
+import bleach
 
 
 @bp.post("/post/<int:post_id>/comment")
@@ -80,10 +103,28 @@ def public_comment(post_id):
         # 清洗危险代码！
         clean_content = bleach.clean(raw_content, tags=allowed_tags, attributes=allowed_attrs)
 
+        # ================= 防抖逻辑开始 =================
+        # 获取 5 秒前的时间点
+        five_seconds_ago = datetime.now() - timedelta(seconds=5)
+
+        # 查询 5 秒内，该用户在这个帖子下，是否发过一模一样的内容
+        recent_comment = CommentModel.query.filter(
+            CommentModel.author_id == g.user.id,
+            CommentModel.post_id == post_id,
+            CommentModel.content == clean_content,
+            CommentModel.create_time >= five_seconds_ago
+        ).first()
+
+        # 如果查到了，说明是连点重复提交
+        if recent_comment:
+            return jsonify({"code": 400, "message": "评论太频繁，请勿重复提交！"})
+        # ================= 防抖逻辑结束 =================
+
         # 存进数据库
         comment = CommentModel(content=clean_content, post_id=post_id, author=g.user)
         db.session.add(comment)
         db.session.commit()
+
         return jsonify({"code": 200, "message": "评论成功"})
     else:
         for field, errors in form.errors.items():
