@@ -12,6 +12,9 @@ __pycache__/
 *.sqlite3
 *.db
 
+# 日志文件
+*.log
+
 # 环境变量/配置文件
 .env
 config.ini
