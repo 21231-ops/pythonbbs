@@ -89,15 +89,23 @@ def logout():
 def mail_register():
     try:
         email = request.args.get("mail")
+        if cache.get(f"limit:{email}"):
+            return jsonify({"code": 400, "message": "发送太频繁，请60秒后再试！"})
+
         existing_user = UserModel.query.filter_by(email=email).first()
         if existing_user:
             return jsonify({"code": 400, "message": "该邮箱已注册，请直接登录！"})
+
         digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         captcha = "".join(random.sample(digits, 6))
         subject = "【灵犀论坛】注册验证码"
         body = f"【灵犀论坛】您的验证码是：{captcha},请勿告诉别人！"
+
         current_app.celery.send_task("send_mail", (email, subject, body))
+
         cache.set(email, captcha, timeout=600)
+        cache.set(f"limit:{email}", 1, timeout=60)
+
         return restful.ok()
     except Exception:
         return restful.server_error()
