@@ -13,7 +13,7 @@ class HttpCode(object):
     servererror = 500
 
 def __restful__result(code, message, data):
-    return jsonify({"message":message or "", "data": data or {}}), code
+    return jsonify({"code": code, "message": message or "", "data": data or {}}), code
 
 def ok(message=None, data=None):
     return __restful__result(code=HttpCode.ok, message=message, data=data)

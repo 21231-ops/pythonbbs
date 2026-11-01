@@ -99,7 +99,7 @@ def mail_register():
         current_app.celery.send_task("send_mail", (email, subject, body))
         cache.set(email, captcha, timeout=600)
         return restful.ok()
-    except Exception as e:
+    except Exception:
         return restful.server_error()
 
 @bp.route('/mail/password-reset', methods=['GET', 'POST'])
