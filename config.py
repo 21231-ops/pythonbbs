@@ -46,6 +46,7 @@ class TestingConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
+    WTF_CSRF_ENABLED = False
 
 config_map = {
     'development': DevelopmentConfig,
