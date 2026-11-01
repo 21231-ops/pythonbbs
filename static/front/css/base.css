@@ -260,3 +260,7 @@ td img {
     display: inline-block;
 }
 
+.ql-editor.ql-blank:focus::before {
+    content: "" !important;
+    display: none !important;
+}
