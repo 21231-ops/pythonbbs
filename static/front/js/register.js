@@ -23,6 +23,7 @@ $(function () {
                 if (result.code === 200) {
                     // 成功发送
                     alert("验证码发送成功，请查收邮件！");
+                    isCountingDown = true; // 标记正在倒计时
                     var countdown = 60;
                     $btn.text(countdown + '秒后重试');
                     var timer = setInterval(function () {
@@ -32,6 +33,7 @@ $(function () {
                         } else {
                             clearInterval(timer);
                             $btn.prop('disabled', false).text('发送验证码');
+                            isCountingDown = false; // 倒计时结束，解除标记
                         }
                     }, 1000);
                 } else {
@@ -46,8 +48,14 @@ $(function () {
         });
     });
 
-     $('#register-form').on('submit', function (event) {
+    var isCountingDown = false;
+    $('#register-form').on('submit', function (event) {
         event.preventDefault(); // 阻止表单默认刷新页面
+
+        if (isCountingDown) {
+            alert("请先获取并填写验证码！");
+            return;
+        }
 
         var $btn = $('#submit-btn');
         $btn.prop('disabled', true).text('注册中...');
