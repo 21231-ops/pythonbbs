@@ -249,7 +249,7 @@ def edit_profile():
             try:
                 db.session.commit()
                 flash("修改资料成功！")
-            except Exception as e:
+            except Exception:
                 db.session.rollback()
                 flash("修改失败，请检查数据格式")
 

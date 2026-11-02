@@ -37,6 +37,12 @@
                         </li>
                     {% endif %}
                     <li class="nav-item">
+                        <a  href="javascript:void(0)" onclick="openGlobalChat()" class="nav-link">
+                            <img src="{{ url_for('static', filename='upload/icons/聊天.png') }}" alt="avatar"
+                                 style="width: 24px; height: 24px; vertical-align: middle;">
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ url_for('user.profile', user_id=g.user.id) }}" class="nav-link">{{ g.user.username }}</a>
                     </li>
                     <li class="nav-item">

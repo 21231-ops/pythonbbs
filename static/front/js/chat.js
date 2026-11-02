@@ -1,6 +1,6 @@
 const socket = io();
 let pendingImageFile = null; // 用来暂存你选好但还没发送的图片
-// 1. 监听连接
+// 监听连接
 socket.on("connect", () => console.log("WebSocket 已连接"));
 
 // 获取 DOM
@@ -157,6 +157,7 @@ function renderRecentUser() {
                          object-fit: cover; border: 1px solid #eee; cursor: pointer;" onclick="openChat('${msg.id}', '${msg.username}', '${msg.avatar}')" ">
                     </div>`
                 });
+
         });
 }
 
@@ -302,4 +303,35 @@ $(function () {
             }
         });
     });
+
+    window.openGlobalChat = function() {
+        // 显示聊天框
+        const chatBox = document.getElementById('chat-box');
+        if (chatBox) {
+            chatBox.style.display = 'block';
+        }
+
+        const chatMessages = document.getElementById('chat-messages');
+        const targetNameSpan = document.getElementById('chat-target-name');
+        chatMessages.innerHTML = '<div style="text-align:center; color:#999; font-size:12px; margin-top:20px;">加载中...</div>';
+
+        // 调用函数去渲染左侧列表
+        renderRecentUser();
+
+        // 使用定时器等待 DOM 渲染完毕（因为 fetch 请求需要几十毫秒）
+        setTimeout(function() {
+            // 抓取左侧列表里的第一个头像图片
+            const firstAvatar = document.querySelector('#sidebar img');
+
+            if (firstAvatar) {
+                // 如果找到图片，模拟点击它
+                // 原来的 HTML 里写了 onclick="openChat(...)"，所以点击就能打开聊天
+                firstAvatar.click();
+            } else {
+                chatMessages.innerHTML = '<div style="text-align:center; color:#999; font-size:12px; margin-top:20px;">还没有聊天记录，快发个消息吧~</div>';
+                targetNameSpan.innerText = "私信";
+            }
+        }, 300);
+    };
+
 });
