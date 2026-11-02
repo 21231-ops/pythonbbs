@@ -35,7 +35,7 @@ class BaseConfig:
     MAIL_PORT = 465
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
-    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
+    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER", "灵犀论坛 <ikhdvn@qq.com>")
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
