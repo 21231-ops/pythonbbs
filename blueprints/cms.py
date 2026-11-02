@@ -14,20 +14,20 @@ bp = Blueprint("cms", __name__, url_prefix="/cms")
 
 @bp.get("")
 def index():
-    post_count = PostModel.query.count()
-    user_count = UserModel.query.count()
-    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_post = PostModel.query.filter(PostModel.create_time >= today_start).count()
-    recent_posts = PostModel.query.order_by(PostModel.create_time.desc()).limit(5).all()
-    online_count = len(online_users)
-    return render_template(
-        "cms/index.html",
-        post_count=post_count,
-        user_count=user_count,
-        today_post=today_post,
-        recent_posts=recent_posts,
-        online_count=online_count
-    )
+        post_count = PostModel.query.count()
+        user_count = UserModel.query.count()
+        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_post = PostModel.query.filter(PostModel.create_time >= today_start).count()
+        recent_posts = PostModel.query.order_by(PostModel.create_time.desc()).limit(5).all()
+        online_count = len(online_users)
+        return render_template(
+            "cms/index.html",
+            post_count=post_count,
+            user_count=user_count,
+            today_post=today_post,
+            recent_posts=recent_posts,
+            online_count=online_count
+        )
 
 @bp.before_request
 def cms_before_request():
