@@ -23,6 +23,7 @@ from bbs_celery import make_celery
 
 app = Flask(__name__)
 env = os.environ.get('FLASK_ENV', 'development')
+print(f"\n🚀 当前服务启动环境: {env}\n")
 app.config.from_object(config.config_map[env])
 app.config.setdefault('CELERY_BROKER_URL', 'redis://redis:6379/0')
 app.config.setdefault('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')

@@ -39,14 +39,15 @@ class BaseConfig:
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
+    WTF_CSRF_ENABLED = False
 
 class TestingConfig(BaseConfig):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@192.168.164.131:3306/pythonbbs?charset=utf8mb4"
+    WTF_CSRF_ENABLED = False
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@127.0.0.1:3306/pythonbbs_test?charset=utf8mb4"
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
-    WTF_CSRF_ENABLED = False
 
 config_map = {
     'development': DevelopmentConfig,
