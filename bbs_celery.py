@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from flask import current_app
 from flask_mail import Message
 from exts import mail
 from celery import Celery
