@@ -1,9 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-# 获取当前 app.py 的绝对目录
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# 强制加载绝对路径下的 .env 文件，无视任何环境变量干扰
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 if os.environ.get('FLASK_ENV') != 'production':
@@ -77,6 +75,4 @@ app.cli.command("create-test-post")(commands.create_test_post)
 
 
 if __name__ == '__main__':
-    print(f"🚨 启动检查 -> 读到邮箱账号: {os.environ.get('MAIL_USERNAME')}")
-    print(f"🚨 启动检查 -> 读到发件人: {os.environ.get('MAIL_DEFAULT_SENDER')}")
     socketio.run(app, debug=True, host="0.0.0.0", port=8000, allow_unsafe_werkzeug=True)
