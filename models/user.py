@@ -31,6 +31,7 @@ class FollowModel(db.Model):
                             primary_key=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
+
 class RoleModel(db.Model):
     __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -88,7 +89,7 @@ class UserModel(db.Model):
 
     def follow(self, user):
         if not self.is_following(user):
-            f = FollowModel(follower=self, followed=user)
+            f = FollowModel(follower_id=self.id, followed_id=user.id)
             db.session.add(f)
 
     def unfollow(self, user):
